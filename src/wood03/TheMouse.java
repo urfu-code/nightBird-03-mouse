@@ -1,7 +1,10 @@
 package wood03;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Stack;
 
 import wood01.Action;
@@ -12,8 +15,6 @@ import woodInterfaces.Mouse;
 public class TheMouse implements Mouse {
 	
 	private Map<Point,Action>mouseWorld;
-	private Stack<Point>mouseLifesTrapsMap;
-	private Stack<Direction>mouseTrail;
 	private Point mouseLocation;
 	private int mouseLifes;
 	private Direction lastDirection;
@@ -21,17 +22,17 @@ public class TheMouse implements Mouse {
 	private boolean needLifes;
 	private boolean isCountedPath;
 	int howManyLifesINeeded;
+	private Stack<Direction> pathToLife;
 	
 	public TheMouse() {
 		mouseWorld = new HashMap<Point,Action>();
 		mouseLocation = new Point(0,0);
 		mouseLifes = 3;
 		lastDirection = Direction.None;
-		mouseLifesTrapsMap = new Stack<Point>();
-		mouseTrail = new Stack<Direction>();
 		lifePointCounter = 0;
 		needLifes = false;
 		isCountedPath = false;
+		pathToLife = new Stack<Direction>();
 	}
 	
 	@Override
@@ -41,9 +42,6 @@ public class TheMouse implements Mouse {
 		shamLocation = getShamLocation(shamLocation,lastDirection);
 		if (!mouseWorld.containsKey(shamLocation))	{
 			mouseWorld.put(shamLocation, action);
-		}
-		if ((action != Action.Fail)&&(!needLifes)) {
-			mouseTrail.push(lastDirection);
 		}
 		direction = thinkAboutNextMove(action, shamLocation, direction);
 		if (needLifes) {
@@ -89,10 +87,7 @@ public class TheMouse implements Mouse {
 	private Direction findLifes(Action action, Point location,Direction direction) throws Exception {
 		if (isCountedPath) {
 			if (mouseWorld.get(mouseLocation) != Action.Life) {
-				if (mouseWorld.get(mouseLocation) == Action.Dead) {
-					mouseLifesTrapsMap.pop();
-				}
-				return invertDirection(mouseTrail.pop());
+				return pathToLife.pop();
 			}
 			else {
 				if (lifePointCounter > 2 + howManyLifesINeeded) {
@@ -109,48 +104,89 @@ public class TheMouse implements Mouse {
 			}
 		}
 		else {
-			Stack<Point>tempStack = new Stack<Point>();
+			Queue<Point> searchLife = new LinkedList<Point>();
 			int tempCounter = mouseLifes;
 			howManyLifesINeeded = 0;
-			boolean weHaveLifes = false;
-			while (!mouseLifesTrapsMap.isEmpty()) {
-				tempStack.push(mouseLifesTrapsMap.pop());
-				if (mouseWorld.get(tempStack.peek()) == Action.Life) {
-					weHaveLifes = true;
+			searchLife.offer(mouseLocation);
+			boolean weHaveLife = false;
+			Point shamLocation = mouseLocation;
+			Point tempLocation;
+			HashSet<Point> usedPoints = new HashSet<Point>();
+			while (!searchLife.isEmpty()) {
+				shamLocation = searchLife.poll();
+				if (!usedPoints.add(shamLocation)) {
+					continue;
+				}
+				if (mouseWorld.get(shamLocation) == Action.Life) {
+					weHaveLife = true;
 					break;
 				}
-				else {
+				else if (mouseWorld.get(shamLocation) == Action.Dead) {
 					tempCounter--;
 					howManyLifesINeeded++;
 				}
+				//up
+				tempLocation = getShamLocation(shamLocation, Direction.Up);
+				if (mouseWorld.containsKey(tempLocation)) {
+					if (mouseWorld.get(tempLocation) != Action.Fail) {
+						searchLife.offer(tempLocation);
+					}
+				}
+				//left
+				tempLocation = getShamLocation(shamLocation, Direction.Left);
+				if (mouseWorld.containsKey(tempLocation)) {
+					if (mouseWorld.get(tempLocation) != Action.Fail) {
+						searchLife.offer(tempLocation);
+					}
+				}
+				//down
+				tempLocation = getShamLocation(shamLocation, Direction.Down);
+				if (mouseWorld.containsKey(tempLocation)) {
+					if (mouseWorld.get(tempLocation) != Action.Fail) {
+						searchLife.offer(tempLocation);
+					}
+				}
+				//right
+				tempLocation = getShamLocation(shamLocation, Direction.Right);
+				if (mouseWorld.containsKey(tempLocation)) {
+					if (mouseWorld.get(tempLocation) != Action.Fail) {
+						searchLife.offer(tempLocation);
+					}
+				}
 				
 			}
-			if ((tempCounter < 0)||(!weHaveLifes)) {
+			if ((tempCounter < 0)||(!weHaveLife)) {
 				needLifes = false;
 				return direction;
 			}
 			else {
 				isCountedPath = true;
-				while (!tempStack.isEmpty()) {
-					mouseLifesTrapsMap.push(tempStack.pop());
-				}
-				return invertDirection(mouseTrail.pop());
+				writePath(shamLocation);
+				return pathToLife.pop();
 			}
 		}
 	}
 
-	private Direction invertDirection(Direction direction) {
-		switch (direction) {
-		case Up:
-			return Direction.Down;
-		case Down:
-			return Direction.Up;
-		case Left:
-			return Direction.Right;
-		case Right:
-			return Direction.Left;
-		default:
-			return Direction.None;
+	private void writePath(Point location) {
+		Point tempPoint = location;
+		while (!location.equals(mouseLocation)) {
+			tempPoint = location.getParrent();
+			//up
+			if (location.getY() < tempPoint.getY()) {
+				pathToLife.push(Direction.Down);
+			}
+			//left
+			else if (location.getX() > tempPoint.getX()) {
+				pathToLife.push(Direction.Right);
+			}
+			//down
+			else if (location.getY() > tempPoint.getY()) {
+				pathToLife.push(Direction.Up);
+			}
+			//right
+			else {
+				pathToLife.push(Direction.Left);
+			}
 		}
 	}
 
@@ -176,9 +212,6 @@ public class TheMouse implements Mouse {
 		case Life:
 			mouseLocation = location;
 			mouseLifes++;
-			if (lastDirection != Direction.None) {
-			 mouseLifesTrapsMap.push(location);
-			}
 			nextDirection = moveLeftHand(direction);
 			break;
 		case Dead:
@@ -186,9 +219,6 @@ public class TheMouse implements Mouse {
 			mouseLifes--;
 			if (mouseLifes < 3) {
 				needLifes = true;
-			}
-			else {
-				mouseLifesTrapsMap.push(mouseLocation);
 			}
 			nextDirection = moveLeftHand(direction);
 			break;
@@ -251,5 +281,6 @@ public class TheMouse implements Mouse {
 			return direction;
 		}
 	}
+
 }
 

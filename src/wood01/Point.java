@@ -2,12 +2,19 @@
 public class Point {
 	private final int x;
 	private final int y;
+	private Point parrent;
 
 	public Point(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
-
+	
+	public Point(int x, int y,Point _parrent) {
+		this.x = x;
+		this.y = y;
+		this.parrent = _parrent;
+	}
+	
 	public int getX() {
 		return x;
 	}
@@ -16,20 +23,24 @@ public class Point {
 		return y;
 	}
 
+	public Point getParrent() {
+		return parrent;
+	}
+	
 	public Point MoveUp() {
-		return new Point(x, y - 1);
+		return new Point(x, y - 1, this);
 	}
 
 	public Point MoveDown() {
-		return new Point(x, y + 1);
+		return new Point(x, y + 1, this);
 	}
 
 	public Point MoveLeft() {
-		return new Point(x - 1, y);
+		return new Point(x - 1, y, this);
 	}
 
 	public Point MoveRight() {
-		return new Point(x + 1, y);
+		return new Point(x + 1, y, this);
 	}
 	
 	public boolean equals(Object obj) {
