@@ -21,14 +21,14 @@ public class TheMouse implements Mouse {
 	private int lifePointCounter;
 	private boolean needLifes;
 	private boolean isCountedPath;
-	int howManyLifesINeeded;
+	private int howManyLifesINeeded;
 	private Stack<Direction> pathToLife;
 	
 	public TheMouse() {
 		mouseWorld = new HashMap<Point,Action>();
 		mouseLocation = new Point(0,0);
 		mouseLifes = 3;
-		lastDirection = Direction.None;
+		lastDirection = null;
 		lifePointCounter = 0;
 		needLifes = false;
 		isCountedPath = false;
@@ -37,6 +37,10 @@ public class TheMouse implements Mouse {
 	
 	@Override
 	public Direction NextMove(Action action) throws Exception {
+		if (lastDirection == null) {
+			lastDirection = Direction.None;
+			return lastDirection;
+		}
 		Point shamLocation = mouseLocation;
 		Direction direction = lastDirection;
 		shamLocation = getShamLocation(shamLocation,lastDirection);
@@ -45,9 +49,20 @@ public class TheMouse implements Mouse {
 		}
 		direction = thinkAboutNextMove(action, shamLocation, direction);
 		if (needLifes) {
-			direction = findLifes(action, shamLocation, direction);
+			direction = findLifes(action, mouseLocation, direction);
 		}
-		if (!isNotablePoint(shamLocation,direction)) {
+		if ((action == Action.Life)&&(!needLifes)) {
+			if (mouseLifes < 4) {
+				needLifes = true;
+				lifePointCounter = 0;
+				howManyLifesINeeded = 4 - mouseLifes;
+				pathToLife.push(invertDirection(lastDirection));
+				lastDirection = Direction.None;
+				return lastDirection;
+			}
+		}
+
+		if (!isNotablePoint(mouseLocation,direction)) {
 			lastDirection = direction;
 			return lastDirection;
 		}
@@ -81,7 +96,7 @@ public class TheMouse implements Mouse {
 	}
 
 	private boolean isNotablePoint(Point location,Direction direction) {
-		return mouseWorld.containsKey(getShamLocation(location,direction));
+		return mouseWorld.containsKey(getShamLocation(mouseLocation,direction));
 	}
 
 	private Direction findLifes(Action action, Point location,Direction direction) throws Exception {
@@ -94,8 +109,7 @@ public class TheMouse implements Mouse {
 					needLifes = false;
 					lifePointCounter = 0;
 					isCountedPath = false;
-					mouseLifes--;
-					return thinkAboutNextMove(action, location, direction);
+					return invertDirection(pathToLife.pop());
 				}
 				else {
 					lifePointCounter++;
@@ -105,7 +119,7 @@ public class TheMouse implements Mouse {
 		}
 		else {
 			Queue<Point> searchLife = new LinkedList<Point>();
-			int tempCounter = mouseLifes;
+			int tempCounter = mouseLifes + 1;
 			howManyLifesINeeded = 0;
 			searchLife.offer(mouseLocation);
 			boolean weHaveLife = false;
@@ -167,13 +181,45 @@ public class TheMouse implements Mouse {
 		}
 	}
 
+	private Direction invertDirection(Direction direction) {
+		switch (direction) {
+		case Up:
+			return Direction.Down;
+		case Down:
+			return Direction.Up;
+		case Left:
+			return Direction.Right;
+		case Right:
+			return Direction.Left;
+		default:
+			return Direction.None;
+		}
+	}
+
 	private void writePath(Point location) {
-		Point tempPoint = location;
+		Point tempPoint;
+		tempPoint = location.getParrent();
+		//up
+		if (location.getY() < tempPoint.getY()) {
+			pathToLife.push(Direction.Up);
+		}
+		//left
+		else if (location.getX() > tempPoint.getX()) {
+			pathToLife.push(Direction.Right);
+		}
+		//down
+		else if (location.getY() > tempPoint.getY()) {
+			pathToLife.push(Direction.Down);
+		}
+		//right
+		else {
+			pathToLife.push(Direction.Left);
+		}
 		while (!location.equals(mouseLocation)) {
 			tempPoint = location.getParrent();
 			//up
 			if (location.getY() < tempPoint.getY()) {
-				pathToLife.push(Direction.Down);
+				pathToLife.push(Direction.Up);
 			}
 			//left
 			else if (location.getX() > tempPoint.getX()) {
@@ -181,12 +227,13 @@ public class TheMouse implements Mouse {
 			}
 			//down
 			else if (location.getY() > tempPoint.getY()) {
-				pathToLife.push(Direction.Up);
+				pathToLife.push(Direction.Down);
 			}
 			//right
 			else {
 				pathToLife.push(Direction.Left);
 			}
+			location = tempPoint;
 		}
 	}
 

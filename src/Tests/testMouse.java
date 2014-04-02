@@ -21,7 +21,7 @@ public class testMouse {
 	String name;
 	@Before
 	public void setUp() throws Exception {
-		Point startPoint = new Point(7,2);
+		Point startPoint = new Point(11,6);
 		Point finishPoint = new Point(1,1);
 		File file = new File("C:\\Users\\epS\\workspace\\TheNightBirdGame\\wood\\wood03\\wood.txt");
 		TheWoodLoader loader = new TheWoodLoader();
