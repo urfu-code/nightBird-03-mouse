@@ -16,6 +16,7 @@ public class Activator {
 			pw.createWoodman("penyokk", new Point(1, 1), new Point(6, 6));
 			Mouse penyokkM = new Mouse("penyokk");
 			Action act = Action.Ok;
+			int steps = 0;
 			while(true){
 				if(act == Action.WoodmanNotFound){
 					System.out.println("DEAD");
@@ -26,8 +27,9 @@ public class Activator {
 					break;
 				}
 				act = pw.move("penyokk", penyokkM.NextMove(act));
+				steps++;
 			}
-			
+			System.out.println(steps);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

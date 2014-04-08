@@ -141,8 +141,8 @@ public class Mouse implements IMouse {
 		int s = 999;
 		for (Solution sltn : sol) {
 			if(sltn.cost.LIFES + m_hp >= 0){
-				// 10,2 - 4,1
-				if(sltn.cost.STEPS - s < (sltn.cost.LIFES - l)*4 &&  sltn.dir != OppositDir(m_prevMove)){
+				// 5,0 - 9,3
+				if(sltn.cost.STEPS - s <= (sltn.cost.LIFES - l)*4 &&  sltn.dir != OppositDir(m_prevMove)){
 					s = sltn.cost.STEPS;
 					l = sltn.cost.LIFES;
 					res = sltn.dir;
