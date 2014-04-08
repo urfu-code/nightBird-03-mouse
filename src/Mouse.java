@@ -4,6 +4,7 @@ public interface Mouse {
 	 * 
 	 * @param action результат предыдущего хода
 	 * @return направление следующего хода
+	 * @throws Exception 
 	 */
-	Direction NextMove(Action action);
+	Direction NextMove(Action action) throws Exception;
 }
