@@ -13,6 +13,7 @@ public class Mouse implements IMouse {
 	private int m_hp;
 	private Direction m_prevMove;
 	private Point m_curCell;
+	private Point m_prevCell;
 	private HashMap<Point, Character> m_woodGraph;
 	private boolean m_onTrap;
 	private boolean m_onLife;
@@ -41,6 +42,10 @@ public class Mouse implements IMouse {
 		}
 		
 		Point nextCell = m_curCell.MoveTo(m_prevMove); // ogogog
+		Point unknownCellU = nextCell.MoveUp(); // unkown spots to go
+		Point unknownCellD = nextCell.MoveDown();
+		Point unknownCellL = nextCell.MoveLeft();
+		Point unknownCellR = nextCell.MoveRigth();
 		if (m_woodGraph.containsKey(nextCell) && m_woodGraph.get(nextCell) == '4'){ // '4' - possible unknown way
 			m_woodGraph.remove(nextCell);
 		}
@@ -50,7 +55,20 @@ public class Mouse implements IMouse {
 			m_onTrap = true;
 			m_onLife = false;
 			m_hp = m_hp - 1;
+			m_prevCell = m_curCell;
 			m_curCell = nextCell;
+			if(!m_woodGraph.containsKey(unknownCellD)){
+				m_woodGraph.put(unknownCellD, '4');
+			}
+			if(!m_woodGraph.containsKey(unknownCellU)){
+				m_woodGraph.put(unknownCellU, '4');
+			}
+			if(!m_woodGraph.containsKey(unknownCellL)){
+				m_woodGraph.put(unknownCellL, '4');
+			}
+			if(!m_woodGraph.containsKey(unknownCellR)){
+				m_woodGraph.put(unknownCellR, '4');
+			}
 			break;
 		case Fail:
 			m_woodGraph.put(nextCell, '1');
@@ -65,33 +83,43 @@ public class Mouse implements IMouse {
 			m_woodGraph.put(nextCell, '0');
 			m_onTrap = false;
 			m_onLife = false;
+			m_prevCell = m_curCell;
 			m_curCell = nextCell;
+			if(!m_woodGraph.containsKey(unknownCellD)){
+				m_woodGraph.put(unknownCellD, '4');
+			}
+			if(!m_woodGraph.containsKey(unknownCellU)){
+				m_woodGraph.put(unknownCellU, '4');
+			}
+			if(!m_woodGraph.containsKey(unknownCellL)){
+				m_woodGraph.put(unknownCellL, '4');
+			}
+			if(!m_woodGraph.containsKey(unknownCellR)){
+				m_woodGraph.put(unknownCellR, '4');
+			}
 			break;
 		case Life:
 			m_woodGraph.put(nextCell, '3');
 			m_onTrap = false;
 			m_onLife = true;
 			m_hp = m_hp + 1;
+			m_prevCell = m_curCell;
 			m_curCell = nextCell;
+			if(!m_woodGraph.containsKey(unknownCellD)){
+				m_woodGraph.put(unknownCellD, '4');
+			}
+			if(!m_woodGraph.containsKey(unknownCellU)){
+				m_woodGraph.put(unknownCellU, '4');
+			}
+			if(!m_woodGraph.containsKey(unknownCellL)){
+				m_woodGraph.put(unknownCellL, '4');
+			}
+			if(!m_woodGraph.containsKey(unknownCellR)){
+				m_woodGraph.put(unknownCellR, '4');
+			}
 			break;
 		default:
 			throw new IOException("Illegal Action");
-		}
-		Point unknownCellU = nextCell.MoveUp(); // unkown spots to go
-		Point unknownCellD = nextCell.MoveDown();
-		Point unknownCellL = nextCell.MoveLeft();
-		Point unknownCellR = nextCell.MoveRigth();
-		if(!m_woodGraph.containsKey(unknownCellD)){
-			m_woodGraph.put(unknownCellD, '4');
-		}
-		if(!m_woodGraph.containsKey(unknownCellU)){
-			m_woodGraph.put(unknownCellU, '4');
-		}
-		if(!m_woodGraph.containsKey(unknownCellL)){
-			m_woodGraph.put(unknownCellL, '4');
-		}
-		if(!m_woodGraph.containsKey(unknownCellR)){
-			m_woodGraph.put(unknownCellR, '4');
 		}
 		return NextDirection();
 	}
@@ -140,17 +168,79 @@ public class Mouse implements IMouse {
 		int l = -10;
 		int s = 999;
 		for (Solution sltn : sol) {
-			if(sltn.cost.LIFES + m_hp >= 0){
-				// 5,0 - 9,3
-				if(sltn.cost.STEPS - s <= (sltn.cost.LIFES - l)*4 &&  sltn.dir != OppositDir(m_prevMove)){
-					s = sltn.cost.STEPS;
-					l = sltn.cost.LIFES;
-					res = sltn.dir;
+			if((sltn.dir != OppositDir(m_prevMove) && !m_prevCell.equals(m_curCell.MoveTo(sltn.dir))) || m_onLife){
+				if (sltn.cost.LIFES + m_hp > 2 || (sltn.cost.LIFES + m_hp >= 0 && c == '3' && sltn.cost.LIFES + m_hp >= 0)) {
+					if (sltn.cost.STEPS - s <= 0) {
+						if (LikeAWall(sltn.dir)) {
+							s = sltn.cost.STEPS;
+							l = sltn.cost.LIFES;
+							res = sltn.dir;
+							if (s == 1) {
+								m_prevMove = res;
+								return res;
+							}
+							continue;
+						}
+						if (sltn.dir == m_prevMove){
+							s = sltn.cost.STEPS;
+							l = sltn.cost.LIFES;
+							res = sltn.dir;
+							if (s == 1) {
+								m_prevMove = res;
+								return res;
+							}
+							continue;
+						}
+						s = sltn.cost.STEPS;
+						l = sltn.cost.LIFES;
+						res = sltn.dir;
+						continue;
+					}
+					else{
+						if (sltn.cost.STEPS - s <= (sltn.cost.LIFES - l)*4) {
+							if (LikeAWall(sltn.dir)) {
+								s = sltn.cost.STEPS;
+								l = sltn.cost.LIFES;
+								res = sltn.dir;
+								if (s == 1) {
+									m_prevMove = res;
+									return res;
+								}
+								continue;
+							}
+							if (sltn.dir == m_prevMove){
+								s = sltn.cost.STEPS;
+								l = sltn.cost.LIFES;
+								res = sltn.dir;
+								if (s == 1) {
+									m_prevMove = res;
+									return res;
+								}
+								continue;
+							}
+							s = sltn.cost.STEPS;
+							l = sltn.cost.LIFES;
+							res = sltn.dir;
+							continue;
+						}
+					}
 				}
 			}
 		}
 		m_prevMove = res;
 		return res;
+	}
+
+	private boolean LikeAWall(Direction dir) {
+		if((dir == Direction.Up || dir == Direction.Down)
+				&& (m_woodGraph.get(m_curCell.MoveLeft()) == '1' || m_woodGraph.get(m_curCell.MoveRigth()) == '1')){
+			return true;
+		}
+		if((dir == Direction.Left || dir == Direction.Right)
+				&& (m_woodGraph.get(m_curCell.MoveUp()) == '1' || m_woodGraph.get(m_curCell.MoveDown()) == '1')){
+			return true;
+		}
+		return false;
 	}
 
 	private Direction OppositDir(Direction dir) {
