@@ -10,8 +10,6 @@ public class PrintableWood extends Wood {
 	private boolean[] busiedSymbols = new boolean[symbols.length]; // чтобы учитывать освободившиеся символы в случае окончательной смерти
 	HashMap<Point, Character> labyrinthOfSymbols = new HashMap<Point, Character>(); // отрисовываемый лабиринт
 	private static HashMap<Point, Character> initialLabyrinth; // изначальное представление лабиринта, не меняется
-	int labLength;
-	int labWidth;
 	private HashMap<Character, Point> locationOfSymbols = new HashMap<Character, Point>(symbols.length); // для запоминания позиций картинок, чтоб при наложении не терять
 	PrintStream ps;
 
@@ -26,8 +24,6 @@ public class PrintableWood extends Wood {
 
 		initialLabyrinth = new HashMap<Point, Character>(lab);
 		labyrinthOfSymbols = lab;
-		labLength = length;
-		labWidth = width;
 
 		for (int i = 0; i < busiedSymbols.length; i++) {
 			busiedSymbols[i] = false;
@@ -85,6 +81,14 @@ public class PrintableWood extends Wood {
 
 	@Override
 	public Action result(Point currentLocation, String name, Point newLocation) {
+		if (newLocation.equals(getWoodman(name).finish)) {
+			ifThereisAnotherWoodman(currentLocation);
+			getWoodman(name).SetLocation(newLocation);
+			locationOfSymbols.put(namesAndSymbols.get(name), newLocation);
+			labyrinthOfSymbols.put(newLocation, namesAndSymbols.get(name));
+			printLabyrinth();
+			return Action.Finish;
+		}
 		switch (getChar(newLocation)) {
 		case ' ' : 
 			ifThereisAnotherWoodman(currentLocation);

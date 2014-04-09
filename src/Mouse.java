@@ -1,15 +1,19 @@
-//import java.util.HashMap;
 import java.util.Stack;
 
 /**
  * 
  * @author Дарья
  * @how руководствуемся правилом правой руки
- * @how путь от жизни, если таковая встретилась, храним в стеке wayFromLife, при необходимости обращаемся к нему, идём по сохранённым в нём Direction, "противоположно разворачиваемым"
- * @how кладём в стек Direction от прошлого хода
+ * 
+ * @how если актуатор видит, что у мыши заканчиваются жизни, он сообщает, что пора "подзарядиться", изменив название алгоритма выполнения на "Back to life"
+ * @how путь от жизни, если таковая встретилась, храним в стеке wayFromLife, при необходимости обращаемся к нему: идём по сохранённым в нём Direction, "противоположно разворачиваемым"
+ * @how кладём в этот стек Direction от прошлого хода, с известным результатом
+ * 
  * @how возвращаясь к жизни, сохраняем по ходу извлекаемые Direction в другой стек, wayBackToPosition, по которому вернёмся на точку, с которой ушли за жизнью
  * @how если встречается новая жизнь, стек wayFromLife сбрасываем и начинаем заполнять заново. это гарантирует путь до ближайшей (по мнению мыши) жизни
+ * 
  * @how тупики и направления, которые дали Fail, в стек wayFromLife не заносятся
+ * @how кроме того, встав на жизнь, мышь набирает некоторое количество жизней "впрок"
  */
 
 public class Mouse implements IMouse {
@@ -23,6 +27,7 @@ public class Mouse implements IMouse {
 	private boolean empty;
 	String nameOfAlghoritm;
 
+	// блок геттеров-сеттеров для тестов
 	public Direction getDirection() {
 		return this.latestDirection;
 	}
@@ -45,7 +50,7 @@ public class Mouse implements IMouse {
 	public Mouse(String name) {
 		this.mouseName = name;	
 		this.latestDirection = Direction.None;
-		this.getEnegry = 4; // максимум, который можем потерять в тупике
+		this.getEnegry = 3;
 		this.life = false;
 		this.empty = true;
 		this.wayFromLife = new Stack<Direction>();
@@ -72,7 +77,6 @@ public class Mouse implements IMouse {
 		if (wayBackToPosition.empty() && nameOfAlghoritm == "The return")
 			nameOfAlghoritm = "Standard";
 		
-
 		switch (action) { 
 		case Ok :
 			if (empty) { // если путь пуст, надо понять, где мы стоим 
@@ -113,14 +117,13 @@ public class Mouse implements IMouse {
 			}
 			return ifItWasOk(latestDirection);
 
-		default : break; // при финише или полной потере жизней. если None, то существует опасность, что на финише будет капкан
+		default : break;
 		// сначала финишируем, потом умираем
 		}
-		return null;
+		return Direction.None; // при финише или полной потере жизней
 	}
 
 	/**
-	 * 
 	 * @param latestDirection направление, по которому мышь уткнулась в стену
 	 * @return направление, по которому мышь идёт теперь
 	 */
@@ -164,7 +167,6 @@ public class Mouse implements IMouse {
 //	}
 
 	/**
-	 * 
 	 * @param latestDirection напраление, по которому мышь шла до этого
 	 * @return направление, по которому мышь идёт теперь
 	 */
@@ -189,8 +191,6 @@ public class Mouse implements IMouse {
 	}
 
 	/**
-	 * 
-	 * @param direction 
 	 * @return противоположное направление
 	 */
 	private Direction reverse(Direction direction) {
@@ -204,14 +204,13 @@ public class Mouse implements IMouse {
 	}
 
 	/**
-	 * 
 	 * @param direction направление, которое собираемся положить в стек
 	 * @return true, если последнее добавленное в стек направление противоположно переданному. т.к. направления, давшие Fail, не идут в стек, тупики - два противолопожных направления подряд
 	 */
 	private boolean deleteDeadEnds(Direction direction) {	
 		if (!wayFromLife.empty() && direction.equals(reverse(wayFromLife.peek()))) {
-			System.out.println("проверяем " + direction + ", сравниваем с " + wayFromLife.peek() + ", превращённым в " + reverse(wayFromLife.peek()));
-			System.out.println("удаляем " + wayFromLife.peek());
+//			System.out.println("проверяем " + direction + ", сравниваем с " + wayFromLife.peek() + ", превращённым в " + reverse(wayFromLife.peek()));
+//			System.out.println("удаляем " + wayFromLife.peek());
 			wayFromLife.pop();			
 			return true;
 		}

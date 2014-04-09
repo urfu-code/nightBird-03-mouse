@@ -26,7 +26,7 @@ public class MouseTest {
 
 	@Test
 	public void testMouseEnergyCounter() {
-		assertEquals(4, mouse.getEnergyPoints());
+		assertEquals(3, mouse.getEnergyPoints());
 	}
 
 	@Test
@@ -73,11 +73,11 @@ public class MouseTest {
 		public void testNextMoveLifeAndGetEnergy() {
 			mouse.NextMove(Action.Ok);
 			mouse.NextMove(Action.Life);
-			assertEquals(3, mouse.getEnergyPoints());
+			assertEquals(2, mouse.getEnergyPoints());
 		}
 
 		@Test
-		public void testNextMoveFromLife() { 
+		public void testNextMoveFromLife() { // проверяем, чем заполнился стек 
 			mouse.NextMove(Action.Ok);
 			mouse.NextMove(Action.Life);
 			mouse.NextMove(Action.Life);
@@ -93,7 +93,6 @@ public class MouseTest {
 			mouse.NextMove(Action.Fail); // Right
 			mouse.NextMove(Action.Fail); // Up
 			mouse.NextMove(Action.Ok); // Right
-			mouse.NextMove(Action.Ok);
 			Iterator<Direction> stackIterator = mouse.wayFromLife.iterator();
 			while (stackIterator.hasNext()) {
 				Direction dir = stackIterator.next();
@@ -112,14 +111,10 @@ public class MouseTest {
 
 		mouse.NextMove(Action.Ok); // Down
 		mouse.NextMove(Action.Fail); // Right
-		mouse.NextMove(Action.Ok);	// Down	
-		mouse.NextMove(Action.Dead); // Left
-		mouse.NextMove(Action.Fail); // - жизнь, Down
-		mouse.NextMove(Action.Fail); // - жизнь, Right
-		mouse.NextMove(Action.Fail); // - жизнь, Up
-		mouse.NextMove(Action.Ok); // Right
-		mouse.NextMove(Action.Ok); // Down
-		mouse.NextMove(Action.Fail); // Right
+		mouse.NextMove(Action.Ok);
+		mouse.NextMove(Action.Fail);
+		mouse.NextMove(Action.Ok);
+		mouse.NextMove(Action.Fail); 
 		
 		mouse.nameOfAlghoritm = "Back to life";
 		assertEquals(Direction.Left, mouse.NextMove(Action.Ok));
