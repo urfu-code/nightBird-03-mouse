@@ -10,4 +10,9 @@ public class Solution {
 		dir = d;
 		cost = c;
 	}
+	
+	@Override
+	public String toString(){
+		return dir.toString() + "=" + cost.toString();
+	}
 }

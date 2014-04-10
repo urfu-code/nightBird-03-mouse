@@ -12,15 +12,19 @@ public class Mouse implements IMouse {
 	
 	private int m_hp;
 	private Direction m_prevMove;
+	private Direction m_nextMove;
 	private Point m_curCell;
 	private Point m_prevCell;
 	private HashMap<Point, Character> m_woodGraph;
 	private boolean m_onTrap;
 	private boolean m_onLife;
 	public final String NAME;
+	private int m_walled;
 	
 	public Mouse(String name){
+		m_nextMove = Direction.None;
 		NAME = name;
+		m_walled = 0;
 		m_hp = 3;
 		m_curCell = new Point(0, 0);
 		m_prevMove = null;
@@ -35,10 +39,6 @@ public class Mouse implements IMouse {
 		if (m_prevMove == null){ // FIRST STEP TO NOWHERE
 			m_prevMove = Direction.None;
 			return Direction.None;
-		}
-		
-		if (m_prevMove == Direction.None && action == Action.Fail){ // shit happens :(
-			throw new IOException("I'm in a wall :(");
 		}
 		
 		Point nextCell = m_curCell.MoveTo(m_prevMove); // ogogog
@@ -69,6 +69,7 @@ public class Mouse implements IMouse {
 			if(!m_woodGraph.containsKey(unknownCellR)){
 				m_woodGraph.put(unknownCellR, '4');
 			}
+			m_walled = 0;
 			break;
 		case Fail:
 			m_woodGraph.put(nextCell, '1');
@@ -78,6 +79,8 @@ public class Mouse implements IMouse {
 			if(m_onLife){
 				m_hp = m_hp + 1;
 			}
+			m_prevMove = Direction.None;
+			m_walled++;
 			break;
 		case Ok:
 			m_woodGraph.put(nextCell, '0');
@@ -97,6 +100,7 @@ public class Mouse implements IMouse {
 			if(!m_woodGraph.containsKey(unknownCellR)){
 				m_woodGraph.put(unknownCellR, '4');
 			}
+			m_walled  = 0;
 			break;
 		case Life:
 			m_woodGraph.put(nextCell, '3');
@@ -117,32 +121,35 @@ public class Mouse implements IMouse {
 			if(!m_woodGraph.containsKey(unknownCellR)){
 				m_woodGraph.put(unknownCellR, '4');
 			}
+			m_walled = 0;
 			break;
 		default:
 			throw new IOException("Illegal Action");
 		}
-		return NextDirection();
+		NextDirection();
+		return m_nextMove;
 	}
 
-	private Direction NextDirection() throws Exception {
+	private void NextDirection() throws Exception {
 		if(m_onLife && m_hp <= 5){
 			m_prevMove = Direction.None;
-			return Direction.None;
+			m_nextMove = Direction.None;
+			return;
 		}
 		if(m_hp <= 2){
 			try {
-				return FindAWayTo('3');
+				m_nextMove =  FindAWayTo('3');
 			} catch (Exception e) {
 				if(e.getMessage() != "No solutions found"){
 					e.printStackTrace();
 				}
 				else{
 					m_prevMove = Direction.None;
-					return Direction.None;
+					return;
 				}
 			}
 		}
-		return FindAWayTo('4');
+		m_nextMove = FindAWayTo('4');
 	}
 
 	private Direction FindAWayTo(char c) throws Exception {
@@ -170,7 +177,9 @@ public class Mouse implements IMouse {
 		int l = -10;
 		int s = 999;
 		for (Solution sltn : sol) {
-			if((sltn.dir != OppositDir(m_prevMove) && !m_prevCell.equals(m_curCell.MoveTo(sltn.dir))) || m_onLife){
+			if((sltn.dir != OppositDir(m_prevMove) && !m_prevCell.equals(m_curCell.MoveTo(sltn.dir)))
+					|| m_walled == 3
+					|| m_onLife){
 				if (sltn.cost.LIFES + m_hp > 2 || (sltn.cost.LIFES + m_hp >= 0 && c == '3' && sltn.cost.LIFES + m_hp >= 0)) {
 					if (sltn.cost.STEPS - s <= 0) {
 						if (LikeAWall(sltn.dir)) {
@@ -226,6 +235,9 @@ public class Mouse implements IMouse {
 							continue;
 						}
 					}
+				}
+				else{
+					return FindAWayTo('3');
 				}
 			}
 		}
@@ -354,4 +366,8 @@ public class Mouse implements IMouse {
 		return new Solution(prevMove, costs.get(dest));
 	}
 
+	@Override
+	public String toString(){
+		return this.NAME + "=" + this.m_curCell.toString();
+	}
 }
