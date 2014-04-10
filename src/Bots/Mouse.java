@@ -126,6 +126,7 @@ public class Mouse implements IMouse {
 
 	private Direction NextDirection() throws Exception {
 		if(m_onLife && m_hp <= 5){
+			m_prevMove = Direction.None;
 			return Direction.None;
 		}
 		if(m_hp <= 2){
@@ -136,6 +137,7 @@ public class Mouse implements IMouse {
 					e.printStackTrace();
 				}
 				else{
+					m_prevMove = Direction.None;
 					return Direction.None;
 				}
 			}
