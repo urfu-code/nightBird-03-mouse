@@ -40,9 +40,8 @@ public class Actuator {
 		if ((currentAction == Action.WoodmanNotFound)) {
 			throw new CodeException("Woodman not found");
 		} 
-		while (true) {
-			currentAction = wood.move(name, mouse.NextMove(currentAction));
-		break;
+		while (currentAction != Action.Finish) {
+			currentAction = wood.move(name, mouse.NextMove(currentAction));	
 		} 	
 		if (currentAction == Action.Finish) {
 			System.out.println("Congratulations! Woodman reached the finish!");
