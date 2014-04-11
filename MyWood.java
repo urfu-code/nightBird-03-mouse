@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public  class MyWood implements Wood {
+	private static final Map<String, MyWoodman> m_woodmanlist = null;
 	Map <String,MyWoodman> m_woodmanList = new HashMap<String,MyWoodman>();
 	char [][] m_wood;
 	Map <String,MyMouse> mousesList = new HashMap<String,MyMouse>();
@@ -23,8 +24,10 @@ public  class MyWood implements Wood {
 	}
 
 	protected Point getLocation(String name) throws CodeException {
-		if (!m_woodmanList.containsKey(name))
+		if (!m_woodmanList.containsKey(name)) {
+			//Action result=Action.WoodmanNotFound;
 			throw new CodeException("Woodman not found");
+		}
 		return m_woodmanList.get(name).GetLocation();
 	}
 
@@ -47,12 +50,13 @@ public  class MyWood implements Wood {
 			break;	
 			case None:  newPoint=n;
 			}
-			
-			if ((newPoint.getX()== m_woodmanList.get(name).GetFinish().getX()) && (newPoint.getY() == m_woodmanList.get(name).GetFinish().getY())) {
-				m_woodmanList.get(name).SetLocation(newPoint);
-				result = Action.Finish;	
+
+			Point p=m_woodmanList.get(name).GetFinish();
+
+			if(newPoint.getX()==p.getX() && newPoint.getY()==p.getY()) {
+				return Action.Finish;
 			}
-			
+
 			switch (m_wood[newPoint.getX()][newPoint.getY()]) {
 			case '1': {
 
@@ -88,9 +92,9 @@ public  class MyWood implements Wood {
 					result=Action.WoodmanNotFound;
 				} 
 
-
+				break;
 			}
-			break;
+
 			}
 		}
 		return result;
