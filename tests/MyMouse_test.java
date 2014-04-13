@@ -16,14 +16,16 @@ public class MyMouse_test extends MyMouse {
 		MyWoodLoader loder = new MyWoodLoader();
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		PrintableWood wood = loder.Load(stream, output);
+		String actions = "";
 		
 		Action action = Action.Ok;
 		wood.createWoodman("Armstrong", new Point(3, 1), new Point(4, 5));
 		MyMouse mouse = new MyMouse();
 		while ((action != Action.WoodmanNotFound)&&(action != Action.Finish)) {
 			action = wood.move("Armstrong", mouse.NextMove(action));
+			actions += action.name();
 		}
-		assertEquals(Action.Finish, action);
+		assertEquals("FailOkFailFailOkFailOkOkFailOkOkFailFailOkFailOkFailFailOkOkFailOkOkFailOkFailOkFailLifeLifeOkFailOkOkFailFailFinish", actions);
 	}
 
 	@Test
@@ -33,13 +35,15 @@ public class MyMouse_test extends MyMouse {
 		MyWoodLoader loder = new MyWoodLoader();
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		PrintableWood wood = loder.Load(stream, output);
+		String actions = "";
 		
 		Action action = Action.Ok;
 		wood.createWoodman("Gagarin", new Point(3, 1), new Point(8, 1));
 		MyMouse mouse = new MyMouse();
 		while ((action != Action.WoodmanNotFound)&&(action != Action.Finish)) {
 			action = wood.move("Gagarin", mouse.NextMove(action));
+			actions += action.name();
 		}
-		assertEquals(Action.WoodmanNotFound, action);
+		assertEquals("FailOkFailFailOkFailOkOkFailOkOkFailFailOkFailOkFailFailOkOkFailOkOkFailOkFailOkFailLifeLifeOkFailOkOkFailFailOkFailOkFailFailOkFailOkFailOkFailWoodmanNotFound", actions);
 	}
 }

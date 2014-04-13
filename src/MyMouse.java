@@ -16,7 +16,6 @@ public class MyMouse implements Mouse {
 		last_direction = null;
 	}
 	
-	
 	@Override
 	public Direction NextMove(Action action) throws Exception{
 		Point location = mouse_location;
@@ -26,69 +25,74 @@ public class MyMouse implements Mouse {
 			last_direction = mouse_direction;
 			return mouse_direction;
 		}
-		// Сейчас не  используется, но потом переделаю алгоритм.
+		// Сейчас не  используется
 		if (!memory_wood.containsKey(mouse_location)) {
 			memory_wood.put(location, action);
 		}
+		
 		switch (action) {
 		case Ok:
 			mouse_location = location;
-			if (last_direction == Direction.Right)
-				mouse_direction = Direction.Up;
-			if (last_direction == Direction.Down)
-				mouse_direction = Direction.Right;
-			if (last_direction == Direction.Left)
-				mouse_direction = Direction.Down;
-			if (last_direction == Direction.Up)
-				mouse_direction = Direction.Left;
+			mouse_direction = turn_left(last_direction);
+			last_direction = mouse_direction;
 			break;
 			
 		case Fail:
-			if (last_direction == Direction.Right)
-				mouse_direction = Direction.Down;
-			if (last_direction == Direction.Down)
-				mouse_direction = Direction.Left;
-			if (last_direction == Direction.Left)
-				mouse_direction = Direction.Up;
-			if (last_direction == Direction.Up)
-				mouse_direction = Direction.Right;
+			mouse_direction = turn_right(last_direction);
+			last_direction = mouse_direction;
 			break;
 			
 		case Life:	
 			mouse_location = location;
 			mouse_lifes++;
-			if (mouse_lifes < 3) {
+			if (mouse_lifes < 5) {
 				mouse_direction = Direction.None;
 			}	else {
-				if (last_direction == Direction.Right)
-					mouse_direction = Direction.Up;
-				if (last_direction == Direction.Down)
-					mouse_direction = Direction.Right;
-				if (last_direction == Direction.Left)
-					mouse_direction = Direction.Down;
-				if (last_direction == Direction.Up)
-					mouse_direction = Direction.Left;
+				mouse_direction = turn_left(last_direction);
+				last_direction = mouse_direction;
 			}
 			break;
 			
 		case Dead:
 			mouse_location = location;
 			mouse_lifes--;
-			if (last_direction == Direction.Right)
-				mouse_direction = Direction.Up;
-			if (last_direction == Direction.Down)
-				mouse_direction = Direction.Right;
-			if (last_direction == Direction.Left)
-				mouse_direction = Direction.Down;
-			if (last_direction == Direction.Up)
-				mouse_direction = Direction.Left;
+			mouse_direction = turn_left(last_direction);
 			break;
 		default:
 			throw new Exception ("ErrorInAction");
 		}
 		
-		last_direction = mouse_direction;
 		return mouse_direction;
 	}
+	
+	
+	private Direction turn_right(Direction direction) {
+		switch (direction) {
+		case Up:
+			return Direction.Right;
+		case Left:
+			return Direction.Up;
+		case Down:
+			return Direction.Left;
+		case Right:
+			return Direction.Down;
+		default:
+			return Direction.Right;
+		}
+	}
 
+	private Direction turn_left(Direction direction) {
+		switch (direction) {
+		case Up:
+			return Direction.Left;
+		case Left:
+			return Direction.Down;
+		case Down:
+			return Direction.Right;
+		case Right:
+			return Direction.Up;
+		default:
+			return Direction.Left;
+		}
+	}
 }

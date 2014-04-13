@@ -11,12 +11,12 @@ public class Activator {
 		MyWoodLoader loder = new MyWoodLoader();
 		PrintableWood wood = loder.Load(stream, System.out);
 		Scanner scanner = new Scanner(System.in);
-		System.out.println("Введите имя игрока:\n");
+		System.out.println("Name:\n");
 		String name = scanner.nextLine();
-		System.out.println("Введите координаты точки старта:\n");
+		System.out.println("Start point:\n");
 		int x_start = scanner.nextInt();
 		int y_start = scanner.nextInt();
-		System.out.println("Введите координаты точки финиша:\n");
+		System.out.println("Finish point:\n");
 		int x_finish = scanner.nextInt();
 		int y_finish = scanner.nextInt();
 		Point start = new Point(x_start, y_start);
@@ -25,14 +25,18 @@ public class Activator {
 		Action currentAction = Action.Ok;
 		wood.createWoodman(name, start, finish);
 		MyMouse mouse = new MyMouse();
-		if ((currentAction != Action.WoodmanNotFound)&&(currentAction != Action.Finish)) {
-			currentAction = wood.move(name, mouse.NextMove(currentAction));
-		} else {	
+		while (true) {
 			if (currentAction == Action.Finish) {
-				System.out.println(name+", ты дошел до финиша.");
-			} else {
-				System.out.println(name+", ты програл.");
+				System.out.println(name+" came to the Finish!");
+				break;
 			}
-		}
+			if (currentAction == Action.WoodmanNotFound) {
+				System.out.println(name+"'s dead.");
+				break;
+			}
+			Direction currentDirection = mouse.NextMove(currentAction);
+			currentAction = wood.move(name, currentDirection);
+		} 
+		scanner.close();
 	}
 }

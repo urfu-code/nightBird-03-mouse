@@ -25,6 +25,7 @@ public class PrintableWood extends MyWood {
 		for (int i = 0; i < m_wood.length; i++) {
 			freeImage.put(imageList[i], false);
 		}		
+		writer = new OutputStreamWriter(out_stream);
 	}
 	
 	
@@ -61,7 +62,7 @@ public class PrintableWood extends MyWood {
 
 	public void printWood() throws Exception {
 		
-		writer = new OutputStreamWriter(out_stream);
+		
 		
 		for (int i = 0; i < m_wood[0].length; i++) {
 			StringBuilder str_b = new StringBuilder();
@@ -97,10 +98,10 @@ public class PrintableWood extends MyWood {
 		StringBuilder print = new StringBuilder(); 
 			for(StringBuilder str : printList) {             
 				print.append(str);                      
-				print.append(System.lineSeparator());   
+				print.append(System.getProperty("line.separator"));   
 			}	
 		writer.write(print.toString());
-		writer.close();
+		writer.flush();
 		printList.clear();	
 }
 	
