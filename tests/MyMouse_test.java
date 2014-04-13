@@ -25,6 +25,7 @@ public class MyMouse_test extends MyMouse {
 			action = wood.move("Armstrong", mouse.NextMove(action));
 			actions += action.name();
 		}
+		//Сравниваем все полученные action с тем, что должно быть.
 		assertEquals("FailOkFailFailOkFailOkOkFailOkOkFailFailOkFailOkFailFailOkOkFailOkOkFailOkFailOkFailLifeLifeOkFailOkOkFailFailFinish", actions);
 	}
 

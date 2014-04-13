@@ -30,6 +30,10 @@ public class MyMouse implements Mouse {
 			memory_wood.put(location, action);
 		}
 		
+		// В случае успешного движения - мышь всегда старается повернуть на лево,
+		// если у нее это не получается, по поворячивается направо.
+		// Когда находит клетку Life, стоит на ней и добирает нужное количество.
+		
 		switch (action) {
 		case Ok:
 			mouse_location = location;
