@@ -1,4 +1,4 @@
-package Bots;
+package Bot;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -137,17 +137,7 @@ public class Mouse implements IMouse {
 			return;
 		}
 		if(m_hp <= 2){
-			try {
-				m_nextMove =  FindAWayTo('3');
-			} catch (Exception e) {
-				if(e.getMessage() != "No solutions found"){
-					e.printStackTrace();
-				}
-				else{
-					m_prevMove = Direction.None;
-					return;
-				}
-			}
+			m_nextMove =  FindAWayTo('3');
 		}
 		m_nextMove = FindAWayTo('4');
 	}
@@ -180,11 +170,11 @@ public class Mouse implements IMouse {
 			if((sltn.dir != OppositDir(m_prevMove) && !m_prevCell.equals(m_curCell.MoveTo(sltn.dir)))
 					|| m_walled == 3
 					|| m_onLife){
-				if (sltn.cost.LIFES + m_hp > 2 || (sltn.cost.LIFES + m_hp >= 0 && c == '3' && sltn.cost.LIFES + m_hp >= 0)) {
-					if (sltn.cost.STEPS - s <= 0) {
+				if (sltn.cost.lifes + m_hp > 2 || (sltn.cost.lifes + m_hp >= 0 && c == '3' && sltn.cost.lifes + m_hp >= 0)) {
+					if (sltn.cost.steps - s <= 0) {
 						if (LikeAWall(sltn.dir)) {
-							s = sltn.cost.STEPS;
-							l = sltn.cost.LIFES;
+							s = sltn.cost.steps;
+							l = sltn.cost.lifes;
 							res = sltn.dir;
 							if (s == 1) {
 								m_prevMove = res;
@@ -193,8 +183,8 @@ public class Mouse implements IMouse {
 							continue;
 						}
 						if (sltn.dir == m_prevMove){
-							s = sltn.cost.STEPS;
-							l = sltn.cost.LIFES;
+							s = sltn.cost.steps;
+							l = sltn.cost.lifes;
 							res = sltn.dir;
 							if (s == 1) {
 								m_prevMove = res;
@@ -202,16 +192,16 @@ public class Mouse implements IMouse {
 							}
 							continue;
 						}
-						s = sltn.cost.STEPS;
-						l = sltn.cost.LIFES;
+						s = sltn.cost.steps;
+						l = sltn.cost.lifes;
 						res = sltn.dir;
 						continue;
 					}
 					else{
-						if (sltn.cost.STEPS - s <= (sltn.cost.LIFES - l)*4) {
+						if (sltn.cost.steps - s <= (sltn.cost.lifes - l)*4) {
 							if (LikeAWall(sltn.dir)) {
-								s = sltn.cost.STEPS;
-								l = sltn.cost.LIFES;
+								s = sltn.cost.steps;
+								l = sltn.cost.lifes;
 								res = sltn.dir;
 								if (s == 1) {
 									m_prevMove = res;
@@ -220,8 +210,8 @@ public class Mouse implements IMouse {
 								continue;
 							}
 							if (sltn.dir == m_prevMove){
-								s = sltn.cost.STEPS;
-								l = sltn.cost.LIFES;
+								s = sltn.cost.steps;
+								l = sltn.cost.lifes;
 								res = sltn.dir;
 								if (s == 1) {
 									m_prevMove = res;
@@ -229,8 +219,8 @@ public class Mouse implements IMouse {
 								}
 								continue;
 							}
-							s = sltn.cost.STEPS;
-							l = sltn.cost.LIFES;
+							s = sltn.cost.steps;
+							l = sltn.cost.lifes;
 							res = sltn.dir;
 							continue;
 						}
@@ -283,12 +273,12 @@ public class Mouse implements IMouse {
 		}
 		// wave
 		costs.put(m_curCell, new CellCost(steps, 0));
-		while( !stop && costs.get(dest).STEPS == -1){
+		while( !stop && costs.get(dest).steps == -1){
 			stop = true;
 			for (Point cell : costs.keySet()) {
-				if(costs.get(cell).STEPS == steps){
-					if( costs.containsKey(cell.MoveDown()) && costs.get(cell.MoveDown()).STEPS == -1 ){
-						int ld = costs.get(cell.MoveDown()).LIFES + costs.get(cell).LIFES;
+				if(costs.get(cell).steps == steps){
+					if( costs.containsKey(cell.MoveDown()) && costs.get(cell.MoveDown()).steps == -1 ){
+						int ld = costs.get(cell.MoveDown()).lifes + costs.get(cell).lifes;
 						if(ld + m_hp < 0){
 							costs.put(cell.MoveDown(), new CellCost(-2, ld));
 						}
@@ -297,8 +287,8 @@ public class Mouse implements IMouse {
 							costs.put(cell.MoveDown(), new CellCost(steps + 1, ld));
 						}
 					}
-					if( costs.containsKey(cell.MoveUp()) && costs.get(cell.MoveUp()).STEPS == -1 ){
-						int lu = costs.get(cell.MoveUp()).LIFES + costs.get(cell).LIFES;
+					if( costs.containsKey(cell.MoveUp()) && costs.get(cell.MoveUp()).steps == -1 ){
+						int lu = costs.get(cell.MoveUp()).lifes + costs.get(cell).lifes;
 						if(lu + m_hp < 0){
 							costs.put(cell.MoveUp(), new CellCost(-2, lu));
 						}
@@ -307,8 +297,8 @@ public class Mouse implements IMouse {
 							costs.put(cell.MoveUp(), new CellCost(steps + 1, lu));
 						}
 					}
-					if( costs.containsKey(cell.MoveLeft()) && costs.get(cell.MoveLeft()).STEPS == -1 ){
-						int ll = costs.get(cell.MoveLeft()).LIFES + costs.get(cell).LIFES;
+					if( costs.containsKey(cell.MoveLeft()) && costs.get(cell.MoveLeft()).steps == -1 ){
+						int ll = costs.get(cell.MoveLeft()).lifes + costs.get(cell).lifes;
 						if(ll + m_hp < 0){
 							costs.put(cell.MoveLeft(), new CellCost(-2, ll));
 						}
@@ -317,8 +307,8 @@ public class Mouse implements IMouse {
 							costs.put(cell.MoveLeft(), new CellCost(steps + 1, ll));
 						}
 					}
-					if( costs.containsKey(cell.MoveRigth()) && costs.get(cell.MoveRigth()).STEPS == -1 ){
-						int lr = costs.get(cell.MoveRigth()).LIFES + costs.get(cell).LIFES;
+					if( costs.containsKey(cell.MoveRigth()) && costs.get(cell.MoveRigth()).steps == -1 ){
+						int lr = costs.get(cell.MoveRigth()).lifes + costs.get(cell).lifes;
 						if(lr + m_hp < 0){
 							costs.put(cell.MoveRigth(), new CellCost(-2, lr));
 						}
@@ -332,29 +322,29 @@ public class Mouse implements IMouse {
 			steps = steps + 1;
 		}
 		// check
-		if(costs.get(dest).STEPS == -1){
+		if(costs.get(dest).steps == -1){
 			throw new Exception("No way found");
 		}
 		// recostruction
 		Direction prevMove = Direction.None;
-		int step = costs.get(dest).STEPS;
+		int step = costs.get(dest).steps;
 		Point curCell = dest;
 		while(step > 0){
 			step = step - 1;
 			for (Point cell : costs.keySet()) {
-				if( cell.MoveDown().equals(curCell) && costs.get(cell).STEPS == step ){
+				if( cell.MoveDown().equals(curCell) && costs.get(cell).steps == step ){
 					curCell = cell;
 					prevMove = Direction.Down;
 				}
-				if( cell.MoveUp().equals(curCell) && costs.get(cell).STEPS == step ){
+				if( cell.MoveUp().equals(curCell) && costs.get(cell).steps == step ){
 					curCell = cell;
 					prevMove = Direction.Up;
 				}
-				if( cell.MoveLeft().equals(curCell) && costs.get(cell).STEPS == step ){
+				if( cell.MoveLeft().equals(curCell) && costs.get(cell).steps == step ){
 					curCell = cell;
 					prevMove = Direction.Left;
 				}
-				if( cell.MoveRigth().equals(curCell) && costs.get(cell).STEPS == step ){
+				if( cell.MoveRigth().equals(curCell) && costs.get(cell).steps == step ){
 					curCell = cell;
 					prevMove = Direction.Right;
 				}

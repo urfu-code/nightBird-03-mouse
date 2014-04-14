@@ -1,4 +1,4 @@
-package Bots;
+package Bot;
 
 import WoodEngine.Direction;
 

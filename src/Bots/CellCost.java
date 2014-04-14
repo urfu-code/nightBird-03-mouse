@@ -1,16 +1,16 @@
-package Bots;
+package Bot;
 
 public class CellCost {
-	public int STEPS;
-	public int LIFES;
+	public int steps;
+	public int lifes;
 	
 	public CellCost(int st, int l){
-		STEPS = st;
-		LIFES = l;
+		steps = st;
+		lifes = l;
 	}
 	
 	@Override
 	public String toString(){
-		return "(S(" + STEPS + "), L(" + LIFES + "))";
+		return "(S(" + steps + "), L(" + lifes + "))";
 	}
 }

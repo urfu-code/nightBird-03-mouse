@@ -1,6 +1,6 @@
 import java.io.FileInputStream;
 
-import Bots.Mouse;
+import Bot.Mouse;
 import WoodEngine.Action;
 import WoodEngine.Point;
 import WoodEngine.PrintableWood;
@@ -14,6 +14,7 @@ public class Activator {
 		try {
 			PrintableWood pw = (PrintableWood) wl.LoadPrntbleWood(new FileInputStream("maze"), System.out);
 			pw.createWoodman("penyokk", new Point(17, 13), new Point(1, 13));
+			//pw.createWoodman("penyokk", new Point(1, 1), new Point(6, 6));
 			Mouse penyokkM = new Mouse("penyokk");
 			Action act = Action.Ok;
 			int steps = 0;
