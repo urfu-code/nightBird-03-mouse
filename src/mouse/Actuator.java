@@ -1,16 +1,12 @@
 package mouse;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.Scanner;
 
 import wood.Action;
 import wood.Direction;
-import wood.My_Wood;
 import wood.My_WoodLoader;
 import wood.Point;
 import wood.PrintWood;
@@ -40,9 +36,11 @@ public class Actuator {
 			wood.createWoodman(name, start, finish);
 			My_Mouse mouse = new My_Mouse();
 			Action action = Action.Ok;
-			while (action != Action.WoodmanNotFound){
+			while ((action != Action.WoodmanNotFound) && (action != Action.Finish)){
 				Direction direction = mouse.NextMove(action);
 				action = wood.move(name, direction);
+				if(action == Action.WoodmanNotFound) System.out.println("Мышь умерла!:(");
+				if(action == Action.Finish) System.out.println("Мышь дошла до финиша!:)");
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

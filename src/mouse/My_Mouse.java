@@ -1,13 +1,10 @@
 package mouse;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import wood.Action;
 import wood.Direction;
-import wood.My_Woodman;
-import wood.Point;
 
 public class My_Mouse implements Mouse {
 	private Map<String, String> map; //карта в голове мышки
@@ -63,9 +60,10 @@ public class My_Mouse implements Mouse {
 			break;
 		case Dead: map.put(s, "K");
 			break;
-		case Finish:
+		/*case Finish:
 			System.out.println("Мышь дошла до финиша!!!");
 			break;
+		*/
 		default:
 			break;
 		}
