@@ -1,3 +1,8 @@
+package Interfaces;
+
+import Enums.Action;
+import Enums.Direction;
+
 public interface Mouse {
 	/**
 	 * Решение о последующем ходе игрока, на основе результата предыдущего.
