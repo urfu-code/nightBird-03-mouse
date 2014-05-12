@@ -19,11 +19,18 @@ public class MyWoodTest extends TestCase {
 		wood.createWoodman("aaa", new Point(1,1), new Point(1,3));
 		assertEquals(wood.move("aaa",Direction.Down),Action.Ok);
 		assertEquals(wood.move("aaa",Direction.Right),Action.Life);
+		assertEquals(wood.move("aaa",Direction.None),Action.Life);
+		assertEquals(wood.move("aaa",Direction.Right),Action.Fail);
 		assertEquals(wood.move("aaa",Direction.Up),Action.Dead);
 		assertEquals(wood.move("aaa",Direction.None),Action.Dead);
-		assertEquals(wood.move("aaa",Direction.Left),Action.Ok);
+		assertEquals(wood.move("aaa",Direction.Up),Action.Fail);
+		assertEquals(wood.move("aaa",Direction.Up),Action.Fail);
+		assertEquals(wood.move("aaa",Direction.Up),Action.Fail);
+		assertEquals(wood.move("aaa",Direction.Up),Action.Fail);
+		assertEquals(wood.move("aaa",Direction.Up),Action.Fail);
+		assertEquals(wood.move("aaa",Direction.Up),Action.WoodmanNotFound);
 		assertEquals(wood.move("lol",Direction.Left),Action.WoodmanNotFound);
-		assertEquals(wood.move("aaa",Direction.Down),Action.Ok);
+		wood.createWoodman("aaa", new Point(1,1), new Point(1,2));
 		assertEquals(wood.move("aaa",Direction.Down),Action.Finish);
 	}
 }

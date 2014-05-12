@@ -15,6 +15,10 @@ public class MyWood implements Wood {
 		m_woodmanFinish = new HashMap<String, Point>();
 	}
 	
+	public char[][] returnWood() {
+		return m_wood;
+	}
+	
 	public void createWoodman(String name, Point start, Point finish) throws IOException {
 		if (m_woodmanList.containsKey(name)) {
 			throw new IOException("You cannot choose this name");
@@ -53,6 +57,7 @@ public class MyWood implements Wood {
 			
 			case None:
 				newLocation = (m_woodmanList.get(name)).GetLocation();
+				break;
 		}
 		Action current;
 		MyWoodman currentW = m_woodmanList.get(name);
@@ -82,22 +87,21 @@ public class MyWood implements Wood {
 				default:
 					return null;
 			}
+			Point point1 = currentW.GetLocation();
 			if ((current == Action.Fail) || (direction == Direction.None)) {
-				if (m_wood[currentW.GetLocation().getY()][currentW.GetLocation().getX()] == 'K') {
-					if (!currentW.Kill()) {
+				if (m_wood[point1.getY()][point1.getX()] == 'K') {
+					if (current != Action.Dead && !currentW.Kill()) {
 						m_woodmanList.remove(name);
-						current = Action.WoodmanNotFound;
-					} else {
-						current = Action.Dead;
 					}
 				}
-				if (m_wood[currentW.GetLocation().getY()][currentW.GetLocation().getX()] == 'L') {
-					currentW.AddLife();
-					current = Action.Life;
+				if (m_wood[point1.getY()][point1.getX()] == 'L') {
+					if (current != Action.Life)
+						currentW.AddLife();
 				}
 			}
-		if (currentW.GetLocation().equals(m_woodmanFinish.get(name)))
-		current = Action.Finish;
+		Point point2 = m_woodmanFinish.get(name);
+		if (point1.equals(point2))
+			current = Action.Finish;
 		return current;
 	}
 	public boolean equals(Object wood) {
@@ -115,5 +119,5 @@ public class MyWood implements Wood {
 			}
 		}
 		return eq;
-	}	
+	}
 }
